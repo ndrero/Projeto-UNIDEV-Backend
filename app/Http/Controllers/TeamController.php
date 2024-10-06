@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use App\Models\Team;
 use Illuminate\Http\Request;
-use App\Http\Requests\StoreTeamRequest;
-use Illuminate\Support\Facades\Storage;
+use GuzzleHttp\Promise\Create;
+use App\Http\Requests\CreateTeamRequest;
 use App\Http\Requests\UpdateTeamRequest;
-use Carbon\Carbon;
 use Illuminate\Foundation\Http\FormRequest;
 
 class TeamController extends Controller
@@ -19,29 +19,17 @@ class TeamController extends Controller
     {
         $this->team = $team;
         $this->request = $request;
+
     }
 
+    // Informa todos os times e todas suas informações
     public function getAll()
     {
         return $this->team->getAll();
     }
 
     /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \App\Http\Requests\StoreTeamRequest  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function createTeam(StoreTeamRequest $request)
-    {
-        $teams = $this->team->getAll();
-        $data = array_merge($request->validated(), ['registration_date' => Carbon::now()->format('Y-m-d h:i:s')]);
-        $teams[] = $data;
-        Storage::put('db/teams.txt', json_encode($teams));
-    }
-
-    /**
-     * Display the specified resource.
+     * Mostra o time que corresponde ao ID informado
      *
      * @param  \App\Models\Team  $team
      * @return \Illuminate\Http\Response
@@ -58,36 +46,60 @@ class TeamController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Mostra os times que não possuem nenhum jogador
      *
      * @param  \App\Models\Team  $team
      * @return \Illuminate\Http\Response
      */
-    public function edit(Team $team)
+    public function getWithoutPlayers()
     {
-        //
+        return $this->team->getWithoutPlayers();
+    }
+
+        /**
+     * Cria um time com as informações passadas por request
+     *
+     * @param  \App\Http\Requests\CreateTeamRequest  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function createTeam(CreateTeamRequest $request)
+    {
+        $createdTeam = $this->team->createTeam($request);
+        if(!$createdTeam) {
+            return response('Não foi possível registrar o time', 404);
+        }
+        return response('Time registrado com sucesso', 200);
     }
 
     /**
-     * Update the specified resource in storage.
+     * Atualiza o time conforme no ID informado
      *
      * @param  \App\Http\Requests\UpdateTeamRequest  $request
      * @param  \App\Models\Team  $team
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateTeamRequest $request, Team $team)
+    public function updateTeam(UpdateTeamRequest $request , $id)
     {
-        //
+        $updated = $this->team->updateTeam($request->all(), $id);
+        if(!$updated){
+            return response('Time não encontrado', 404);
+        }
+        return response('Time atualizado com sucesso', 200);
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove o time conforme o ID informado
      *
      * @param  \App\Models\Team  $team
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Team $team)
+    public function deleteTeam($id)
     {
-        //
+        $deleted = $this->team->deleteTeam($id);
+
+        if(!$deleted){
+            return response('Time não encontrado', 404);
+        }
+        return response('Time deletado com sucesso', 200);
     }
 }

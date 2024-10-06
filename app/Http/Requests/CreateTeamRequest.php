@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Support\Carbon;
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateTeamRequest extends FormRequest
+class CreateTeamRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -47,8 +47,7 @@ class UpdateTeamRequest extends FormRequest
             'players.max' => 'O número máximo de jogadores é 6.',
             'players.*.name.required' => 'O nome do jogador é obrigatório.',
             'players.*.name.min' => 'O nome do jogador deve ter pelo menos 3 caracteres.',
-            'players.*.name.max' => 'O nome do jogador não pode ter mais de 30 caracteres.',
-            'players.*.position.required' => 'A posição do jogador é obrigatória.',
+            'players.*.name.max' => 'O nome do jogador não pode ter mais de 30 caracteres.'
         ];
     }
 }

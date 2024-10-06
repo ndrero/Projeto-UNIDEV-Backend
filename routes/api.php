@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\TeamController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -15,11 +14,10 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
 
-Route::post('/times', [TeamController::class, 'createTeam']);
 Route::get('/times', [TeamController::class, 'getAll']);
+Route::get('/times/sem-jogadores', [TeamController::class, 'getWithoutPlayers']);
 Route::get('/times/{id}', [TeamController::class, 'getById']);
-
+Route::post('/times', [TeamController::class, 'createTeam']);
+Route::put('/times/{id}', [TeamController::class, 'updateTeam']);
+Route::delete('/times/{id}', [TeamController::class, 'deleteTeam']);
